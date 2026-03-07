@@ -27,16 +27,22 @@ CREATE TABLE brand (
     FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id)
 );
 
+CREATE TABLE frame_style (
+    frame_style_id SMALLINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
+);
+
 CREATE TABLE model (
     model_id SMALLINT PRIMARY KEY AUTO_INCREMENT,
     prescription_left DECIMAL(4,2) NOT NULL,
     prescription_right DECIMAL(4,2) NOT NULL,
-    frame_style VARCHAR(50) NOT NULL,
+    frame_style_id SMALLINT NOT NULL,
     frame_color VARCHAR(50) NOT NULL,
     left_glass_color VARCHAR(50) NOT NULL,
     right_glass_color VARCHAR(50) NOT NULL,
     price DECIMAL(6,2) NOT NULL,
     brand_id SMALLINT NOT NULL,
+    FOREIGN KEY (frame_style_id) REFERENCES frame_style(frame_style_id),
     FOREIGN KEY (brand_id) REFERENCES brand(brand_id)
 );
 
@@ -68,7 +74,6 @@ CREATE TABLE sale (
     FOREIGN KEY (employee_id) REFERENCES employee(employee_id)
 );
 
--- SUPPLIER
 INSERT INTO SUPPLIER (name, street, number, city, postal_code, country, phone, nif)
 VALUES 
 ('Vision Plus', 'Carrer Major', 15, 'Madrid', 28001, 'Spain', '911223344', 'B87654321'),
@@ -80,11 +85,17 @@ VALUES
 ('Persol', 2),
 ('Gucci', 1);
 
-INSERT INTO MODEL (brand_id, prescription_left, prescription_right, frame_style, frame_color, left_glass_color, right_glass_color, price)
+INSERT INTO frame_style (name)
+VALUES 
+('flotant'),
+('pasta'),
+('metàl·lica');
+
+INSERT INTO MODEL (brand_id, prescription_left, prescription_right, frame_style_id, frame_color, left_glass_color, right_glass_color, price)
 VALUES
-(1, 1.0, 1.0, 'Sport', 'Black', 'Green', 'Green', 200.00),
-(2, 0.75, 0.75, 'Retro', 'Brown', 'Clear', 'Clear', 180.50),
-(3, 1.25, 1.25, 'Square', 'Gold', 'Blue', 'Blue', 250.00);
+(1, 1.0, 1.0, 1, 'Black', 'Green', 'Green', 200.00),
+(2, 0.75, 0.75, 2, 'Brown', 'Clear', 'Clear', 180.50),
+(3, 1.25, 1.25, 3, 'Gold', 'Blue', 'Blue', 250.00);
 
 INSERT INTO CLIENT (name, postal_code, phone, email, registration_date, referring_client_id)
 VALUES

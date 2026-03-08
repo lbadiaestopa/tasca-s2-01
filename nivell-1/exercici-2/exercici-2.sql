@@ -100,10 +100,10 @@ VALUES
 
 INSERT INTO product (name, description, image, price, pizza_type_id)
 VALUES
-('Margherita', 'Tomato, mozzarella and basil', 'margherita.jpg', 8.50, 1),
-('Pepperoni', 'Pepperoni and cheese', 'pepperoni.jpg', 9.50, 2),
-('Cheeseburger', 'Beef burger with cheese', 'burger.jpg', 7.00, NULL),
-('Cola', 'Soft drink', 'cola.jpg', 2.00, NULL);
+('Margherita', 'Pizza', 'margherita.jpg', 8.50, 1),
+('Pepperoni', 'Pizza', 'pepperoni.jpg', 9.50, 2),
+('Cheeseburger', 'Hamburguesa', 'burger.jpg', 7.00, NULL),
+('Cola', 'Beguda', 'cola.jpg', 2.00, NULL);
 
 INSERT INTO `order` (date, delivery_method, price, delivery_datetime, client_id, shop_id, employee_id)
 VALUES

@@ -1,3 +1,5 @@
+USE tasca_s2_01_n1_e1;
+
 SELECT *
 FROM sale s
 JOIN client c

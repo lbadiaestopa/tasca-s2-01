@@ -1,11 +1,15 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
 CREATE DATABASE IF NOT EXISTS tasca_s2_01_n2_e1;
 USE tasca_s2_01_n2_e1;
 
 CREATE TABLE user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(50),
-    password VARCHAR(255),
-    username VARCHAR(50),
+    email VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    username VARCHAR(50) NOT NULL,
     date_of_birth DATE,
     gender VARCHAR(25),
     country VARCHAR(50),
@@ -14,33 +18,33 @@ CREATE TABLE user (
 
 CREATE TABLE channel (
     channel_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50),
+    name VARCHAR(50) NOT NULL,
     description VARCHAR(500),
-    created_at DATE,
-    user_id INT UNIQUE,
+    created_at DATE NOT NULL,
+    user_id INT UNIQUE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
 
 CREATE TABLE video (
     video_id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(100),
+    title VARCHAR(100) NOT NULL,
     description VARCHAR(500),
-    file_size INT,
-    file_name VARCHAR(100),
-    duration TIME,
+    file_size INT NOT NULL,
+    file_name VARCHAR(100) NOT NULL,
+    duration TIME NOT NULL,
     thumbnail VARCHAR(100),
-    view_count INT,
-    visibility VARCHAR(10),
-    published_at DATETIME,
-    user_id INT,
+    view_count INT NOT NULL DEFAULT 0,
+    visibility VARCHAR(10) NOT NULL,
+    published_at DATETIME NOT NULL,
+    user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
 
 CREATE TABLE video_rating (
-    user_id INT,
-    video_id INT,
-    reaction_type VARCHAR(10),
-    created_at DATETIME,
+    user_id INT NOT NULL,
+    video_id INT NOT NULL,
+    reaction_type VARCHAR(10) NOT NULL,
+    created_at DATETIME NOT NULL,
     PRIMARY KEY(user_id, video_id),
     FOREIGN KEY (user_id) REFERENCES user(user_id),
     FOREIGN KEY (video_id) REFERENCES video(video_id)
@@ -48,12 +52,12 @@ CREATE TABLE video_rating (
 
 CREATE TABLE tag (
     tag_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50)
+    name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE video_tag (
-    tag_id INT,
-    video_id INT,
+    tag_id INT NOT NULL,
+    video_id INT NOT NULL,
     PRIMARY KEY(tag_id, video_id),
     FOREIGN KEY (tag_id) REFERENCES tag(tag_id),
     FOREIGN KEY (video_id) REFERENCES video(video_id)
@@ -61,36 +65,36 @@ CREATE TABLE video_tag (
 
 CREATE TABLE comment (
     comment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    text VARCHAR(500),
-    created_at DATETIME,
-    user_id INT,
-    video_id INT,
+    text VARCHAR(500) NOT NULL,
+    created_at DATETIME NOT NULL,
+    user_id INT NOT NULL,
+    video_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id),
     FOREIGN KEY (video_id) REFERENCES video(video_id)
 );
 
 CREATE TABLE playlist (
     playlist_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    created_at DATETIME,
-    visibility VARCHAR(10),
-    user_id INT,
+    name VARCHAR(100) NOT NULL,
+    created_at DATETIME NOT NULL,
+    visibility VARCHAR(10) NOT NULL,
+    user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
 
 CREATE TABLE comment_rating (
-    user_id INT,
-    comment_id BIGINT,
-    reaction_type VARCHAR(10),
-    created_at DATETIME,
+    user_id INT NOT NULL,
+    comment_id BIGINT NOT NULL,
+    reaction_type VARCHAR(10) NOT NULL,
+    created_at DATETIME NOT NULL,
     PRIMARY KEY(user_id, comment_id),
     FOREIGN KEY (user_id) REFERENCES user(user_id),
     FOREIGN KEY (comment_id) REFERENCES comment(comment_id)
 );
 
 CREATE TABLE playlist_video (
-    playlist_id INT,
-    video_id INT,
+    playlist_id INT NOT NULL,
+    video_id INT NOT NULL,
     PRIMARY KEY(playlist_id, video_id),
     FOREIGN KEY (playlist_id) REFERENCES playlist(playlist_id),
     FOREIGN KEY (video_id) REFERENCES video(video_id)
@@ -144,3 +148,7 @@ INSERT INTO comment_rating (user_id, comment_id, reaction_type, created_at) VALU
 
 INSERT INTO playlist_video (playlist_id, video_id) VALUES
 (1,1),(1,4),(2,2),(3,3);
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

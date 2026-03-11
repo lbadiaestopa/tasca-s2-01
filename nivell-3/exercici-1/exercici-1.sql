@@ -50,8 +50,14 @@ CREATE TABLE subscription (
   started_at DATE NOT NULL,
   renovation DATE,
   user_id INT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES user(user_id)
+);
+
+CREATE TABLE subscription_payment_method (
+  subscription_id INT NOT NULL,
   payment_method_id INT NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES user(user_id),
+  PRIMARY KEY (subscription_id, payment_method_id),
+  FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id),
   FOREIGN KEY (payment_method_id) REFERENCES payment_method(payment_method_id)
 );
 
@@ -155,9 +161,14 @@ INSERT INTO payment_method (method) VALUES
 ('Credit Card'),
 ('Paypal');
 
-INSERT INTO subscription (started_at, renovation, user_id, payment_method_id) VALUES
-('2026-01-01','2027-01-01',1,1),
-('2026-02-01','2027-02-01',2,2);
+INSERT INTO subscription (started_at, renovation, user_id) VALUES
+('2026-01-01','2027-01-01',1),
+('2026-02-01','2027-02-01',2);
+
+INSERT INTO subscription_payment_method (subscription_id, payment_method_id) VALUES
+(1,1),
+(1,2),
+(2,2);
 
 INSERT INTO payment (date, order_number, total, subscription_id) VALUES
 ('2026-01-01',1001,10,1),
@@ -169,9 +180,9 @@ INSERT INTO credit_card_payment (payment_method_id, expiration, ccv) VALUES
 INSERT INTO paypal_payment (payment_method_id, username) VALUES
 (2,'bob_paypal');
 
-INSERT INTO playlist (name, song_count, created_at, removed_at, user_id) VALUES
-('Alice Playlist',2,'2026-03-01',NULL,1),
-('Bob Playlist',1,'2026-03-02',NULL,2);
+INSERT INTO playlist (name, created_at, removed_at, user_id) VALUES
+('Alice Playlist','2026-03-01',NULL,1),
+('Bob Playlist','2026-03-02',NULL,2);
 
 INSERT INTO playlist_song (playlist_id, song_id, added_by, added_at) VALUES
 (1,1,1,'2026-03-01'),
@@ -198,6 +209,27 @@ INSERT INTO favourite_song (user_id, song_id) VALUES
 (1,1),
 (1,2),
 (2,3);
+
+UPDATE playlist p
+SET song_count = (
+    SELECT COUNT(*)
+    FROM playlist_song ps
+    WHERE ps.playlist_id = p.playlist_id
+);
+
+CREATE TRIGGER update_song_count_after_insert
+AFTER INSERT ON playlist_song
+FOR EACH ROW
+UPDATE playlist
+SET song_count = (SELECT COUNT(*) FROM playlist_song WHERE playlist_id = NEW.playlist_id)
+WHERE playlist_id = NEW.playlist_id;
+
+CREATE TRIGGER update_song_count_after_delete
+AFTER DELETE ON playlist_song
+FOR EACH ROW
+UPDATE playlist
+SET song_count = (SELECT COUNT(*) FROM playlist_song WHERE playlist_id = OLD.playlist_id)
+WHERE playlist_id = OLD.playlist_id;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

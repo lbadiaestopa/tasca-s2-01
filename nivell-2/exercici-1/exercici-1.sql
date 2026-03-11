@@ -2,8 +2,8 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
-CREATE DATABASE IF NOT EXISTS tasca_s2_01_n2_e1;
-USE tasca_s2_01_n2_e1;
+CREATE DATABASE IF NOT EXISTS tasca_s2_01_n3_e1;
+USE tasca_s2_01_n3_e1;
 
 CREATE TABLE user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -11,7 +11,7 @@ CREATE TABLE user (
     password VARCHAR(255) NOT NULL,
     username VARCHAR(50) NOT NULL,
     date_of_birth DATE,
-    gender VARCHAR(25),
+    gender ENUM('man','woman','other','prefer_not_to_say'),
     country VARCHAR(50),
     postal_code VARCHAR(20)
 );
@@ -25,6 +25,15 @@ CREATE TABLE channel (
     FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
 
+CREATE TABLE user_channel_subscription (
+    user_id INT NOT NULL,
+    channel_id INT NOT NULL,
+    subscribed_at DATETIME NOT NULL,
+    PRIMARY KEY(user_id, channel_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id),
+    FOREIGN KEY (channel_id) REFERENCES channel(channel_id)
+);
+
 CREATE TABLE video (
     video_id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
@@ -34,7 +43,7 @@ CREATE TABLE video (
     duration TIME NOT NULL,
     thumbnail VARCHAR(100),
     view_count INT NOT NULL DEFAULT 0,
-    visibility VARCHAR(10) NOT NULL,
+    visibility ENUM('public','private','hidden') NOT NULL,
     published_at DATETIME NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id)
@@ -43,7 +52,7 @@ CREATE TABLE video (
 CREATE TABLE video_rating (
     user_id INT NOT NULL,
     video_id INT NOT NULL,
-    reaction_type VARCHAR(10) NOT NULL,
+    reaction_type ENUM('like','dislike') NOT NULL,
     created_at DATETIME NOT NULL,
     PRIMARY KEY(user_id, video_id),
     FOREIGN KEY (user_id) REFERENCES user(user_id),
@@ -85,7 +94,7 @@ CREATE TABLE playlist (
 CREATE TABLE comment_rating (
     user_id INT NOT NULL,
     comment_id BIGINT NOT NULL,
-    reaction_type VARCHAR(10) NOT NULL,
+    reaction_type ENUM('like','dislike') NOT NULL,
     created_at DATETIME NOT NULL,
     PRIMARY KEY(user_id, comment_id),
     FOREIGN KEY (user_id) REFERENCES user(user_id),
@@ -101,15 +110,21 @@ CREATE TABLE playlist_video (
 );
 
 INSERT INTO user (email, password, username, date_of_birth, gender, country, postal_code) VALUES
-('alice@example.com','pass1','alice', '1995-01-15','Female','Spain','08001'),
-('bob@example.com','pass2','bob', '1990-06-22','Male','Spain','08002'),
-('carol@example.com','pass3','carol', '1988-03-12','Female','France','75001'),
-('dave@example.com','pass4','dave', '1992-11-05','Male','USA','10001');
+('alice@example.com','pass1','alice', '1995-01-15','woman','Spain','08001'),
+('bob@example.com','pass2','bob', '1990-06-22','man','Spain','08002'),
+('carol@example.com','pass3','carol', '1988-03-12','woman','France','75001'),
+('dave@example.com','pass4','dave', '1992-11-05','man','USA','10001');
 
 INSERT INTO channel (name, description, created_at, user_id) VALUES
 ('Alice Vlogs','Canal de vlogs i tutorials','2022-01-01',1),
 ('Bob Gaming','Gameplay i streams','2021-06-15',2),
 ('Carol Cooking','Receptes fàcils i ràpides','2022-03-20',3);
+
+INSERT INTO user_channel_subscription (user_id, channel_id, subscribed_at) VALUES
+(1,2,'2023-01-10 09:00:00'),
+(2,1,'2023-01-11 10:00:00'),
+(3,1,'2023-03-01 12:00:00'),
+(4,3,'2023-03-06 15:00:00');
 
 INSERT INTO video (title, description, file_size, file_name, duration, thumbnail, view_count, visibility, published_at, user_id) VALUES
 ('Vlog 1','Primer vlog','1024','vlog1.mp4','00:10:00','thumb1.jpg',120,'public','2023-01-10 10:00:00',1),

@@ -28,20 +28,14 @@ CREATE TABLE shop (
     province VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE employee (
-    employee_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    surname VARCHAR(100) NOT NULL,
-    nif VARCHAR(9) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-    job_role VARCHAR(50) NOT NULL,
-    shop_id SMALLINT NOT NULL,
-    FOREIGN KEY (shop_id) REFERENCES shop(shop_id)
-);
-
 CREATE TABLE pizza_type (
     pizza_type_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE product_type (
+    product_type_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
+    name ENUM('pizza','hamburguesa','beguda') NOT NULL
 );
 
 CREATE TABLE product (
@@ -50,14 +44,27 @@ CREATE TABLE product (
     description VARCHAR(200) NOT NULL,
     image VARCHAR(100),
     price DECIMAL(6,2) NOT NULL,
+    product_type_id SMALLINT,
     pizza_type_id SMALLINT,
+    FOREIGN KEY (product_type_id) REFERENCES product_type(product_type_id),
     FOREIGN KEY (pizza_type_id) REFERENCES pizza_type(pizza_type_id)
+);
+
+CREATE TABLE employee (
+    employee_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    surname VARCHAR(100) NOT NULL,
+    nif VARCHAR(9) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    job_role ENUM('cuiner','repartidor') NOT NULL,
+    shop_id SMALLINT NOT NULL,
+    FOREIGN KEY (shop_id) REFERENCES shop(shop_id)
 );
 
 CREATE TABLE `order` (
     order_id MEDIUMINT AUTO_INCREMENT PRIMARY KEY,
     date DATETIME NOT NULL,
-    delivery_method VARCHAR(50) NOT NULL,
+    delivery_method ENUM('a_domicili','recollida_botiga') NOT NULL,
     price DECIMAL(6,2),
     delivery_datetime DATETIME,
     client_id SMALLINT NOT NULL,
@@ -87,28 +94,34 @@ VALUES
 ('Avinguda Diagonal 100', 8005, 'Barcelona', 'Barcelona'),
 ('Gran Via 200', 8006, 'Barcelona', 'Barcelona');
 
-INSERT INTO employee (name, surname, nif, phone, job_role, shop_id)
-VALUES
-('Marc', 'Lopez', '12345678A', '600111111', 'cook', 1),
-('Laura', 'Perez', '87654321B', '600222222', 'delivery', 1),
-('David', 'Sanchez', '45678912C', '600333333', 'cook', 2);
-
 INSERT INTO pizza_type (name)
 VALUES
 ('Classic'),
 ('Special');
 
-INSERT INTO product (name, description, image, price, pizza_type_id)
+INSERT INTO product_type (name)
 VALUES
-('Margherita', 'Pizza', 'margherita.jpg', 8.50, 1),
-('Pepperoni', 'Pizza', 'pepperoni.jpg', 9.50, 2),
-('Cheeseburger', 'Hamburguesa', 'burger.jpg', 7.00, NULL),
-('Cola', 'Beguda', 'cola.jpg', 2.00, NULL);
+('pizza'),
+('hamburguesa'),
+('beguda');
+
+INSERT INTO product (name, description, image, price, product_type_id, pizza_type_id)
+VALUES
+('Margherita', 'Pizza', 'margherita.jpg', 8.50, 1, 1),
+('Pepperoni', 'Pizza', 'pepperoni.jpg', 9.50, 1, 2),
+('Cheeseburger', 'Hamburguesa', 'burger.jpg', 7.00, 2, NULL),
+('Cola', 'Beguda', 'cola.jpg', 2.00, 3, NULL);
+
+INSERT INTO employee (name, surname, nif, phone, job_role, shop_id)
+VALUES
+('Marc', 'Lopez', '12345678A', '600111111', 'cuiner', 1),
+('Laura', 'Perez', '87654321B', '600222222', 'repartidor', 1),
+('David', 'Sanchez', '45678912C', '600333333', 'cuiner', 2);
 
 INSERT INTO `order` (date, delivery_method, price, delivery_datetime, client_id, shop_id, employee_id)
 VALUES
-('2026-03-07 20:00:00', 'delivery', 19.50, '2026-03-07 20:30:00', 1, 1, 2),
-('2026-03-07 21:00:00', 'pickup', 9.50, NULL, 2, 1, NULL);
+('2026-03-07 20:00:00', 'a_domicili', 19.50, '2026-03-07 20:30:00', 1, 1, 2),
+('2026-03-07 21:00:00', 'recollida_botiga', 9.50, NULL, 2, 1, NULL);
 
 INSERT INTO order_quantity (order_id, product_id, quantity)
 VALUES

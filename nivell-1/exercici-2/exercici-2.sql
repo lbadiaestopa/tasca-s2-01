@@ -33,11 +33,6 @@ CREATE TABLE pizza_type (
     name VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE product_type (
-    product_type_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-    name ENUM('pizza','hamburguesa','beguda') NOT NULL
-);
-
 CREATE TABLE product (
     product_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -46,7 +41,7 @@ CREATE TABLE product (
     price DECIMAL(6,2) NOT NULL,
     product_type_id SMALLINT,
     pizza_type_id SMALLINT,
-    FOREIGN KEY (product_type_id) REFERENCES product_type(product_type_id),
+    product_type ENUM('pizza','hamburguesa','beguda') NOT NULL,
     FOREIGN KEY (pizza_type_id) REFERENCES pizza_type(pizza_type_id)
 );
 
@@ -99,18 +94,12 @@ VALUES
 ('Classic'),
 ('Special');
 
-INSERT INTO product_type (name)
+INSERT INTO product (name, description, image, price, product_type, pizza_type_id)
 VALUES
-('pizza'),
-('hamburguesa'),
-('beguda');
-
-INSERT INTO product (name, description, image, price, product_type_id, pizza_type_id)
-VALUES
-('Margherita', 'Pizza', 'margherita.jpg', 8.50, 1, 1),
-('Pepperoni', 'Pizza', 'pepperoni.jpg', 9.50, 1, 2),
-('Cheeseburger', 'Hamburguesa', 'burger.jpg', 7.00, 2, NULL),
-('Cola', 'Beguda', 'cola.jpg', 2.00, 3, NULL);
+('Margherita', 'Pizza', 'margherita.jpg', 8.50, 'pizza', 1),
+('Pepperoni', 'Pizza', 'pepperoni.jpg', 9.50, 'pizza', 2),
+('Cheeseburger', 'Hamburguesa', 'burger.jpg', 7.00, 'hamburguesa', NULL),
+('Cola', 'Beguda', 'cola.jpg', 2.00, 'beguda', NULL);
 
 INSERT INTO employee (name, surname, nif, phone, job_role, shop_id)
 VALUES

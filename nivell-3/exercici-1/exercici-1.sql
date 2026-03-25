@@ -53,21 +53,14 @@ CREATE TABLE subscription (
   FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
 
-CREATE TABLE subscription_payment_method (
-  subscription_id INT NOT NULL,
-  payment_method_id INT NOT NULL,
-  PRIMARY KEY (subscription_id, payment_method_id),
-  FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id),
-  FOREIGN KEY (payment_method_id) REFERENCES payment_method(payment_method_id)
-);
-
 CREATE TABLE payment (
   payment_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   date DATE NOT NULL,
   order_number INT NOT NULL,
   total SMALLINT NOT NULL,
   subscription_id INT NOT NULL,
-  FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id)
+  FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id),
+  FOREIGN KEY (payment_method_id) REFERENCES payment_method(payment_method_id)
 );
 
 CREATE TABLE credit_card_payment (
@@ -165,14 +158,9 @@ INSERT INTO subscription (started_at, renovation, user_id) VALUES
 ('2026-01-01','2027-01-01',1),
 ('2026-02-01','2027-02-01',2);
 
-INSERT INTO subscription_payment_method (subscription_id, payment_method_id) VALUES
-(1,1),
-(1,2),
-(2,2);
-
-INSERT INTO payment (date, order_number, total, subscription_id) VALUES
-('2026-01-01',1001,10,1),
-('2026-02-01',1002,15,2);
+INSERT INTO payment (date, order_number, total, subscription_id, payment_method_id) VALUES
+('2026-01-01',1001,10,1, 2),
+('2026-02-01',1002,15,2, 1);
 
 INSERT INTO credit_card_payment (payment_method_id, expiration, ccv) VALUES
 (1,'2028-12-31',123);
